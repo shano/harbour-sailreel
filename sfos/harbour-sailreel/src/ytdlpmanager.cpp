@@ -1,8 +1,10 @@
+#include <QClipboard>
 #include <QDateTime>
 #include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QGuiApplication>
 #include <QStandardPaths>
 #include <QTextStream>
 #include <QSysInfo>
@@ -25,11 +27,17 @@
 // handler, which isn't reliably readable without systemd-journal group
 // membership. Mirror install diagnostics to a plain file too so they can be
 // read directly regardless of journal permissions.
-static void logToFile(QString const& line)
+static QString debugLogPath()
 {
   QString dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-  QDir().mkpath(dataDir);
-  QFile logFile(dataDir + QStringLiteral("/debug.log"));
+  return dataDir + QStringLiteral("/debug.log");
+}
+
+static void logToFile(QString const& line)
+{
+  QString path = debugLogPath();
+  QDir().mkpath(QFileInfo(path).absolutePath());
+  QFile logFile(path);
   if (logFile.open(QIODevice::Append | QIODevice::Text)) {
     QTextStream stream(&logFile);
     stream << QDateTime::currentDateTime().toString(Qt::ISODate) << ' ' << line << '\n';
@@ -149,6 +157,22 @@ void YtDlpManager::setSponsorBlockEnabled(bool enabled)
 QString YtDlpManager::sponsorBlockCategories()
 {
   return QStringLiteral(SPONSORBLOCK_CATEGORIES);
+}
+
+bool YtDlpManager::copyDebugLogToClipboard() const
+{
+  QFile logFile(debugLogPath());
+  if (!logFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    return false;
+  }
+
+  QByteArray contents = logFile.readAll();
+  if (contents.isEmpty()) {
+    return false;
+  }
+
+  QGuiApplication::clipboard()->setText(QString::fromUtf8(contents));
+  return true;
 }
 
 void YtDlpManager::setStatus(Status status)

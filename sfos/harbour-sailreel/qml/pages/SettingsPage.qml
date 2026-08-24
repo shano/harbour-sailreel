@@ -143,6 +143,40 @@ Page {
                 }
             }
 
+            SectionHeader {
+                //% "Diagnostics"
+                text: qsTrId("sailpipe_settings-section_diagnostics")
+            }
+
+            Label {
+                //% "Copy this device's debug log to the clipboard, e.g. to include when reporting a playback or extraction problem."
+                text: qsTrId("sailpipe_settings-diagnostics_description")
+                wrapMode: Text.WordWrap
+                font.pixelSize: Theme.fontSizeSmall
+                anchors {
+                    leftMargin: Theme.horizontalPageMargin
+                    rightMargin: Theme.horizontalPageMargin
+                    left: parent.left
+                    right: parent.right
+                }
+            }
+
+            Button {
+                anchors.horizontalCenter: parent.horizontalCenter
+                //% "Copy Debug Log"
+                text: qsTrId("sailpipe_settings-diagnostics_copy_log")
+                onClicked: {
+                    if (YtDlp.copyDebugLogToClipboard()) {
+                        //% "Debug log copied to clipboard"
+                        banner.text = qsTrId("sailpipe_settings-diagnostics_copied");
+                    } else {
+                        //% "No debug log found on this device"
+                        banner.text = qsTrId("sailpipe_settings-diagnostics_empty");
+                    }
+                    banner.show();
+                }
+            }
+
             Connections {
                 target: YtDlp
                 onErrorOccurred: {

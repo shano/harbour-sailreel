@@ -46,6 +46,8 @@ public:
   bool sponsorBlockEnabled() const;
   void setSponsorBlockEnabled(bool enabled);
 
+  Q_INVOKABLE bool copyDebugLogToClipboard() const;
+
   // The categories passed to yt-dlp's --sponsorblock-remove when enabled.
   static QString sponsorBlockCategories();
 
