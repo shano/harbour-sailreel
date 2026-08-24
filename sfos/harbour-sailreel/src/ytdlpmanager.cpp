@@ -97,7 +97,11 @@ QString YtDlpManager::binaryPath()
 
 QString YtDlpManager::releaseAssetName()
 {
-  QString arch = QSysInfo::currentCpuArchitecture();
+  // currentCpuArchitecture() reflects the running kernel, which on some
+  // devices is 64bit even though the app/userspace is armv7hl (32bit).
+  // buildCpuArchitecture() reflects what the app was compiled for, which
+  // matches the RPM target/userspace ABI actually in use.
+  QString arch = QSysInfo::buildCpuArchitecture();
   if (arch == QLatin1String("arm64")) {
     return QStringLiteral("yt-dlp_linux_aarch64");
   }
@@ -240,8 +244,8 @@ void YtDlpManager::install()
 
   QString assetName = releaseAssetName();
   QString downloadUrl = QString("https://github.com/yt-dlp/yt-dlp/releases/latest/download/%1").arg(assetName);
-  logToFile(QStringLiteral("install() starting download: asset=%1 url=%2 cpuArch=%3")
-    .arg(assetName, downloadUrl, QSysInfo::currentCpuArchitecture()));
+  logToFile(QStringLiteral("install() starting download: asset=%1 url=%2 buildCpuArch=%3")
+    .arg(assetName, downloadUrl, QSysInfo::buildCpuArchitecture()));
   startDownload(downloadUrl);
 }
 
