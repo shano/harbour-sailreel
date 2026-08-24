@@ -17,6 +17,7 @@ Item {
     property int skipTimeLong: 60
     property bool resumed: false
     property var sponsorSegments: []
+    property bool hasError: false
 
     onVideoUrlChanged: {
         sponsorSegments = [];
@@ -409,7 +410,7 @@ Item {
     BusyIndicator {
         anchors.centerIn: parent
         running: true
-        visible: !controllable
+        visible: !controllable && !hasError
         size: BusyIndicatorSize.Medium
     }
 

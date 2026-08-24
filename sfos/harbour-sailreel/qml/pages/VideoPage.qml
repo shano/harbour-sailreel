@@ -82,6 +82,7 @@ Page {
                     name: root.name
                     uploader: root.mediaInfo.uploaderName
                     videoUrl: root.url
+                    hasError: root.errorMessage.length > 0
 
                     onPlaybackError: {
                         root.errorMessage = message;
