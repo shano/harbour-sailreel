@@ -12,10 +12,25 @@ Page {
     property MediaInfo mediaInfo: MediaInfo { id: mediaInfo }
     property alias source: mediaInfo.content
     property string errorMessage
+    property bool commentsLoadTriggered: false
+
+    // Comments load after the video extraction is known to have finished
+    // (success or failure) rather than alongside it — both go through the
+    // same yt-dlp subprocess pool, and comments (--write-comments, up to a
+    // 60s timeout) competing with the video's own extraction for CPU and
+    // network was a plausible contributor to slow/stalled video loads.
+    function loadCommentsOnce() {
+        if (!commentsLoadTriggered) {
+            commentsLoadTriggered = true;
+            comments.model.loadComments(extractor, url);
+        }
+    }
+
+    onSourceChanged: loadCommentsOnce()
+    onErrorMessageChanged: loadCommentsOnce()
 
     Component.onCompleted: {
         extractor.downloadExtract(mediaInfo, url);
-        comments.model.loadComments(extractor, url);
         DownloadManager.page = url;
         DownloadManager.name = name;
         MediaJunction.controllable = false;
