@@ -193,6 +193,16 @@ Item {
                 //% "This video could not be played"
                 root.playbackError(media.errorString.length > 0 ? media.errorString : qsTrId("sailpipe_video_player-playback_error"));
             }
+            // Some resolved stream URLs (observed with YouTube's SABR
+            // rotation) never fail outright — gstreamer just sits in
+            // Loading forever instead of reaching Buffering/Buffered or
+            // erroring, so InvalidMedia/onError above never fire either.
+            if (status == MediaPlayer.Loading) {
+                loadStallTimer.restart();
+            }
+            else {
+                loadStallTimer.stop();
+            }
         }
         onError: {
             Utils.logDebug("VideoPlayer: MediaPlayer error=" + error + " errorString=" + errorString);
@@ -275,6 +285,18 @@ Item {
     Component.onDestruction: {
         if ((root.videoUrl.length > 0) && (media.duration > 0) && (media.position > 0)) {
             WatchHistory.setProgress(root.videoUrl, media.position, media.duration);
+        }
+    }
+
+    Timer {
+        id: loadStallTimer
+        interval: 20000
+        running: false
+        repeat: false
+        onTriggered: {
+            Utils.logDebug("VideoPlayer: load stalled for source=" + media.source);
+            //% "This video is taking too long to load"
+            root.playbackError(qsTrId("sailpipe_video_player-load_timeout"));
         }
     }
 
