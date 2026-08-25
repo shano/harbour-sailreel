@@ -15,11 +15,13 @@
   <!-- Off-circle badge: full circle with the bottom-right quadrant
        replaced by a concave scoop, matching the Sailfish/Harbour icon
        convention (Camera, BitSailor, OSMScout, SailCat all use this).
-       Scaled up from center (radius 38->41) so the badge fills the
-       canvas closer to the edge, matching sibling app icons more
+       Scaled up from center (radius 38->43, zero margin — the badge
+       now touches the canvas edge at top/bottom/left/right) so the
+       badge fills the canvas fully, matching sibling app icons more
        closely — flagged as looking undersized in the icon grid
-       (openrepos comment 45432). -->
-  <g transform="translate(43,43) scale(1.0789473684) translate(-43,-43)">
+       (openrepos comment 45432); radius 41 (v0.7.4) still measured
+       ~13% smaller than SailCat's badge on-device. -->
+  <g transform="translate(43,43) scale(1.1315789474) translate(-43,-43)">
     <path
        d="M 81 43 A 38 38 0 1 1 43 5 A 38 38 0 0 1 81 43 Z"
        fill="url(#badge)" />
