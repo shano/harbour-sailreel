@@ -68,7 +68,7 @@ jobs:
           merge-multiple: true
 
       - name: Attach RPMs to release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: RPMS/**/*.rpm
           # Tags like v0.7.0-rc.1 are dev/RC builds for local sideloading —
